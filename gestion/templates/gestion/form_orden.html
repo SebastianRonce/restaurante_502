@@ -1,0 +1,25 @@
+{% extends 'gestion/base.html' %}
+
+{% block content %}
+
+<h2>Formulario Orden</h2>
+
+<form method="POST">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">
+        Guardar
+    </button>
+
+</form>
+
+<br>
+
+<a href="{% url 'ordenes' %}">
+    Volver
+</a>
+
+{% endblock %}

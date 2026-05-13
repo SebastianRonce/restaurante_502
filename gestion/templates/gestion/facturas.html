@@ -1,27 +1,60 @@
 {% extends 'gestion/base.html' %}
 
 {% block content %}
+
 <h2>Facturas</h2>
-<table>
+
+<a href="{% url 'crear_factura' %}">
+    <button>Nueva Factura</button>
+</a>
+
+<br><br>
+
+<table border="1" cellpadding="10">
+
     <tr>
         <th>ID</th>
         <th>Orden</th>
-        <th>Fecha</th>
+        <th>Método Pago</th>
         <th>Subtotal</th>
         <th>Impuesto</th>
         <th>Total</th>
-        <th>Método de pago</th>
+        <th>Acciones</th>
     </tr>
+
     {% for factura in facturas %}
     <tr>
+
         <td>{{ factura.id }}</td>
-        <td>{{ factura.orden.id }}</td>
-        <td>{{ factura.fecha_factura }}</td>
-        <td>{{ factura.subtotal }}</td>
-        <td>{{ factura.impuesto }}</td>
-        <td>{{ factura.total_factura }}</td>
+
+        <td>{{ factura.orden }}</td>
+
         <td>{{ factura.metodo_pago }}</td>
+
+        <td>${{ factura.subtotal }}</td>
+
+        <td>${{ factura.impuesto }}</td>
+
+        <td>${{ factura.total_factura }}</td>
+
+        <td>
+
+            <a href="{% url 'editar_factura' factura.id %}">
+                Editar
+            </a>
+
+            |
+
+            <a href="{% url 'eliminar_factura' factura.id %}"
+               onclick="return confirm('¿Seguro que deseas eliminar esta factura?')">
+                Eliminar
+            </a>
+
+        </td>
+
     </tr>
     {% endfor %}
+
 </table>
+
 {% endblock %}

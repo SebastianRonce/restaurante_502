@@ -1,0 +1,25 @@
+{% extends 'gestion/base.html' %}
+
+{% block content %}
+
+<h2>Registro Administrador</h2>
+
+<form method="POST">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">
+        Registrarse
+    </button>
+
+</form>
+
+<br>
+
+<a href="{% url 'login' %}">
+    Ir al login
+</a>
+
+{% endblock %}
