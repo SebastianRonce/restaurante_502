@@ -42,7 +42,14 @@ class OrdenForm(forms.ModelForm):
 
     class Meta:
         model = Orden
-        exclude = ['total']
+
+        fields = [
+            'cliente',
+            'empleado',
+            'mesa',
+            'estado_orden',
+            'total'
+        ]
 
 
 class FacturaForm(forms.ModelForm):
