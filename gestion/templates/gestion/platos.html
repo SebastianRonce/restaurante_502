@@ -1,28 +1,23 @@
 {% extends 'gestion/base.html' %}
+{% load rol_tags %}
 
 {% block content %}
-
 <div class="seccion-header">
     <h2>🍽️ Platos</h2>
     <span class="seccion-linea"></span>
 </div>
-
 <div class="barra-acciones">
     <span class="texto-muted">Gestión del menú del restaurante</span>
-    <a href="{% url 'crear_plato' %}" class="btn btn-dorado">
-        ＋ Nuevo Plato
-    </a>
+    {% if user|tiene_rol:"administrador" %}
+    <a href="{% url 'crear_plato' %}" class="btn btn-dorado">＋ Nuevo Plato</a>
+    {% endif %}
 </div>
-
 <div class="tabla-wrapper">
     <table>
         <thead>
             <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Descripción</th>
-                <th>Acciones</th>
+                <th>#</th><th>Nombre</th><th>Precio</th><th>Descripción</th>
+                {% if user|tiene_rol:"administrador" %}<th>Acciones</th>{% endif %}
             </tr>
         </thead>
         <tbody>
@@ -32,19 +27,18 @@
                 <td><strong>{{ plato.nombre_plato }}</strong></td>
                 <td><span class="badge badge-dorado">${{ plato.precio }}</span></td>
                 <td class="texto-muted">{{ plato.descripcion }}</td>
+                {% if user|tiene_rol:"administrador" %}
                 <td>
                     <a href="{% url 'editar_plato' plato.id %}" class="btn btn-primario" style="padding:6px 14px;font-size:0.75rem;">✏️ Editar</a>
                     <a href="{% url 'eliminar_plato' plato.id %}" class="btn btn-secundario" style="padding:6px 14px;font-size:0.75rem;color:#C62828;"
                        onclick="return confirm('¿Seguro que deseas eliminar este plato?')">🗑️ Eliminar</a>
                 </td>
+                {% endif %}
             </tr>
             {% empty %}
-            <tr>
-                <td colspan="5" style="text-align:center;padding:32px;" class="texto-muted">No hay platos registrados aún.</td>
-            </tr>
+            <tr><td colspan="5" style="text-align:center;padding:32px;" class="texto-muted">No hay platos registrados aún.</td></tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
-
 {% endblock %}

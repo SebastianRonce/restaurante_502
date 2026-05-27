@@ -1,30 +1,25 @@
 {% extends 'gestion/base.html' %}
+{% load rol_tags %}
 
 {% block content %}
-
 <div class="seccion-header">
     <h2>📋 Órdenes</h2>
     <span class="seccion-linea"></span>
 </div>
-
 <div class="barra-acciones">
-    <span class="texto-muted">Historial y gestión de órdenes</span>
-    <a href="{% url 'crear_orden' %}" class="btn btn-dorado">
-        ＋ Nueva Orden
-    </a>
+    <span class="texto-muted">
+        {% if user|tiene_rol:"cajero" %}Órdenes pendientes de pago{% else %}Historial y gestión de órdenes{% endif %}
+    </span>
+    {% if user|tiene_rol:"administrador,mesero" %}
+    <a href="{% url 'crear_orden' %}" class="btn btn-dorado">＋ Nueva Orden</a>
+    {% endif %}
 </div>
-
 <div class="tabla-wrapper">
     <table>
         <thead>
             <tr>
-                <th>#</th>
-                <th>Cliente</th>
-                <th>Empleado</th>
-                <th>Mesa</th>
-                <th>Estado</th>
-                <th>Total</th>
-                <th>Acciones</th>
+                <th>#</th><th>Cliente</th><th>Empleado</th><th>Mesa</th><th>Estado</th><th>Total</th>
+                {% if user|tiene_rol:"administrador,mesero" %}<th>Acciones</th>{% endif %}
             </tr>
         </thead>
         <tbody>
@@ -35,30 +30,28 @@
                 <td class="texto-muted">{{ orden.empleado }}</td>
                 <td>Mesa {{ orden.mesa }}</td>
                 <td>
-                    {% if orden.estado_orden == 'pendiente' or orden.estado_orden == 'Pendiente' %}
-                        <span class="badge badge-naranja">⏳ {{ orden.estado_orden }}</span>
-                    {% elif orden.estado_orden == 'entregada' or orden.estado_orden == 'Entregada' %}
-                        <span class="badge badge-verde">✓ {{ orden.estado_orden }}</span>
-                    {% elif orden.estado_orden == 'cancelada' or orden.estado_orden == 'Cancelada' %}
-                        <span class="badge badge-rojo">✗ {{ orden.estado_orden }}</span>
-                    {% else %}
-                        <span class="badge badge-gris">{{ orden.estado_orden }}</span>
-                    {% endif %}
+                    {% if orden.estado_orden == 'Activa' %}<span class="badge badge-azul">● {{ orden.estado_orden }}</span>
+                    {% elif orden.estado_orden == 'En preparación' %}<span class="badge badge-naranja">● {{ orden.estado_orden }}</span>
+                    {% elif orden.estado_orden == 'Entregada' %}<span class="badge badge-verde">✓ {{ orden.estado_orden }}</span>
+                    {% elif orden.estado_orden == 'Facturada' %}<span class="badge badge-dorado">✓ {{ orden.estado_orden }}</span>
+                    {% elif orden.estado_orden == 'Cancelada' %}<span class="badge badge-rojo">✗ {{ orden.estado_orden }}</span>
+                    {% else %}<span class="badge badge-gris">{{ orden.estado_orden }}</span>{% endif %}
                 </td>
                 <td><span class="badge badge-dorado">${{ orden.total }}</span></td>
+                {% if user|tiene_rol:"administrador,mesero" %}
                 <td>
                     <a href="{% url 'editar_orden' orden.id %}" class="btn btn-primario" style="padding:6px 14px;font-size:0.75rem;">✏️ Editar</a>
+                    {% if user|tiene_rol:"administrador" %}
                     <a href="{% url 'eliminar_orden' orden.id %}" class="btn btn-secundario" style="padding:6px 14px;font-size:0.75rem;color:#C62828;"
                        onclick="return confirm('¿Seguro que deseas eliminar esta orden?')">🗑️ Eliminar</a>
+                    {% endif %}
                 </td>
+                {% endif %}
             </tr>
             {% empty %}
-            <tr>
-                <td colspan="7" style="text-align:center;padding:32px;" class="texto-muted">No hay órdenes registradas aún.</td>
-            </tr>
+            <tr><td colspan="7" style="text-align:center;padding:32px;" class="texto-muted">No hay órdenes registradas aún.</td></tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
-
 {% endblock %}

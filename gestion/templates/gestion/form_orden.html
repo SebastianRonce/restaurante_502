@@ -1,4 +1,5 @@
 {% extends 'gestion/base.html' %}
+{% load rol_tags %}
 
 {% block content %}
 
@@ -8,10 +9,10 @@
 </div>
 
 <div class="form-card">
-
-    <form method="POST">
+    <form method="POST" id="form-orden">
         {% csrf_token %}
 
+        {# ── Datos principales ── #}
         {% for field in form %}
         <div class="form-grupo">
             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -22,13 +23,137 @@
         </div>
         {% endfor %}
 
-        <div style="display:flex;gap:12px;margin-top:8px;">
-            <button type="submit" class="btn btn-dorado">💾 Guardar</button>
-            <a href="{% url 'ordenes' %}" class="btn btn-secundario">← Volver</a>
+        {# ── Platos pedidos ── #}
+        <div style="margin-top:28px;">
+            <div class="seccion-header" style="margin-bottom:16px;">
+                <h3 style="font-size:1rem;color:var(--azul-oscuro);">🍽️ Platos Pedidos</h3>
+                <span class="seccion-linea"></span>
+            </div>
+
+            {{ formset.management_form }}
+
+            <div id="formset-container">
+                {% for detalle_form in formset %}
+                <div class="detalle-fila" style="display:flex;gap:12px;align-items:flex-end;margin-bottom:12px;padding:14px;background:#f8f9fb;border-radius:10px;border:1px solid #e8eaf0;">
+                    {% for hidden in detalle_form.hidden_fields %}{{ hidden }}{% endfor %}
+
+                    <div style="flex:2;">
+                        <label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#555;display:block;margin-bottom:6px;">Plato</label>
+                        {{ detalle_form.plato }}
+                    </div>
+                    <div style="flex:0 0 100px;">
+                        <label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#555;display:block;margin-bottom:6px;">Cantidad</label>
+                        {{ detalle_form.cantidad }}
+                    </div>
+                    <div style="flex:0 0 110px;">
+                        <label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#555;display:block;margin-bottom:6px;">Subtotal</label>
+                        <span class="subtotal-fila badge badge-dorado" style="display:inline-block;min-width:80px;">$0</span>
+                    </div>
+                    <div style="flex:0 0 auto;">
+                        {% if detalle_form.DELETE %}
+                        <label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#C62828;display:flex;align-items:center;gap:4px;cursor:pointer;">
+                            {{ detalle_form.DELETE }} Quitar
+                        </label>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <button type="button" id="btn-agregar" class="btn btn-secundario" style="margin-top:4px;">
+                ＋ Agregar plato
+            </button>
         </div>
 
-    </form>
+        {# ── Total ── #}
+        <div style="margin-top:24px;padding:16px 20px;background:var(--azul-oscuro);border-radius:10px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="color:var(--acento-claro);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;font-size:0.85rem;">Total de la orden</span>
+            <span id="total-orden" style="color:#fff;font-size:1.4rem;font-weight:700;">$0.00</span>
+        </div>
 
+        <div style="display:flex;gap:12px;margin-top:20px;">
+            <button type="submit" class="btn btn-dorado">💾 Guardar Orden</button>
+            <a href="{% url 'ordenes' %}" class="btn btn-secundario">← Volver</a>
+        </div>
+    </form>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Precios de los platos desde Django
+const precios = {
+    {% for plato in platos %}
+    "{{ plato.id }}": {{ plato.precio }},
+    {% endfor %}
+};
+
+function calcularTotales() {
+    let total = 0;
+    document.querySelectorAll('.detalle-fila').forEach(fila => {
+        const deleteCheck = fila.querySelector('input[type="checkbox"]');
+        if (deleteCheck && deleteCheck.checked) return;
+
+        const selectPlato = fila.querySelector('select[name$="-plato"]');
+        const inputCantidad = fila.querySelector('input[name$="-cantidad"]');
+        const spanSubtotal = fila.querySelector('.subtotal-fila');
+
+        if (!selectPlato || !inputCantidad) return;
+
+        const precio = precios[selectPlato.value] || 0;
+        const cantidad = parseInt(inputCantidad.value) || 0;
+        const subtotal = precio * cantidad;
+
+        if (spanSubtotal) {
+            spanSubtotal.textContent = '$' + subtotal.toLocaleString('es-CO', {minimumFractionDigits: 2});
+        }
+        total += subtotal;
+    });
+
+    document.getElementById('total-orden').textContent =
+        '$' + total.toLocaleString('es-CO', {minimumFractionDigits: 2});
+}
+
+// Escuchar cambios en todo el formset
+document.getElementById('formset-container').addEventListener('change', calcularTotales);
+document.getElementById('formset-container').addEventListener('input', calcularTotales);
+
+// Botón agregar fila
+document.getElementById('btn-agregar').addEventListener('click', function() {
+    const container = document.getElementById('formset-container');
+    const totalForms = document.getElementById('id_detalleorden_set-TOTAL_FORMS');
+    const formCount = parseInt(totalForms.value);
+
+    // Clonar la primera fila
+    const primeraFila = container.querySelector('.detalle-fila');
+    if (!primeraFila) return;
+
+    const nuevaFila = primeraFila.cloneNode(true);
+
+    // Actualizar índices
+    nuevaFila.innerHTML = nuevaFila.innerHTML.replace(
+        /detalleorden_set-\d+/g,
+        `detalleorden_set-${formCount}`
+    );
+
+    // Limpiar valores
+    nuevaFila.querySelectorAll('input[type="number"]').forEach(i => i.value = 1);
+    nuevaFila.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+    nuevaFila.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+    const sub = nuevaFila.querySelector('.subtotal-fila');
+    if (sub) sub.textContent = '$0';
+
+    // Limpiar id hidden (para que Django lo trate como nuevo)
+    const idInput = nuevaFila.querySelector('input[name$="-id"]');
+    if (idInput) idInput.value = '';
+
+    container.appendChild(nuevaFila);
+    totalForms.value = formCount + 1;
+    calcularTotales();
+});
+
+// Calcular al cargar (modo editar)
+calcularTotales();
+</script>
 {% endblock %}

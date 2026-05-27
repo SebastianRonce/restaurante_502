@@ -1,35 +1,79 @@
 {% extends 'gestion/base.html' %}
+{% load rol_tags %}
 
 {% block content %}
-<h2>Panel principal</h2>
 
-<div class="card">
-    <h3>Clientes</h3>
-    <p>{{ total_clientes }}</p>
-</div>
+{% if user|tiene_rol:"administrador" %}
 
-<div class="card">
-    <h3>Empleados</h3>
-    <p>{{ total_empleados }}</p>
-</div>
+    <div class="seccion-header">
+        <h2>👑 Panel Administrador</h2>
+        <span class="seccion-linea"></span>
+    </div>
+    <div class="cards-grid">
+        <a href="/clientes/" style="text-decoration:none;">
+            <div class="card"><span class="card-icono">👤</span><h3>Clientes</h3><p>{{ total_clientes }}</p></div>
+        </a>
+        <a href="/empleados/" style="text-decoration:none;">
+            <div class="card"><span class="card-icono">👥</span><h3>Empleados</h3><p>{{ total_empleados }}</p></div>
+        </a>
+        <a href="/mesas/" style="text-decoration:none;">
+            <div class="card"><span class="card-icono">🪑</span><h3>Mesas</h3><p>{{ total_mesas }}</p></div>
+        </a>
+        <a href="/platos/" style="text-decoration:none;">
+            <div class="card"><span class="card-icono">🍽️</span><h3>Platos</h3><p>{{ total_platos }}</p></div>
+        </a>
+        <a href="/ordenes/" style="text-decoration:none;">
+            <div class="card"><span class="card-icono">📋</span><h3>Órdenes</h3><p>{{ total_ordenes }}</p></div>
+        </a>
+        <a href="/facturas/" style="text-decoration:none;">
+            <div class="card"><span class="card-icono">🧾</span><h3>Facturas</h3><p>{{ total_facturas }}</p></div>
+        </a>
+    </div>
 
-<div class="card">
-    <h3>Mesas</h3>
-    <p>{{ total_mesas }}</p>
-</div>
+{% elif user|tiene_rol:"mesero" %}
 
-<div class="card">
-    <h3>Platos</h3>
-    <p>{{ total_platos }}</p>
-</div>
+    <div class="seccion-header">
+        <h2>🍽️ Panel Mesero</h2>
+        <span class="seccion-linea"></span>
+    </div>
+    <div class="cards-grid">
+        <a href="/mesas/" style="text-decoration:none;">
+            <div class="card"><span class="card-icono">🪑</span><h3>Mesas Disponibles</h3><p>{{ mesas_disponibles }}</p></div>
+        </a>
+        <a href="/ordenes/" style="text-decoration:none;">
+            <div class="card"><span class="card-icono">📋</span><h3>Órdenes Activas</h3><p>{{ ordenes_activas }}</p></div>
+        </a>
+        <a href="/platos/" style="text-decoration:none;">
+            <div class="card"><span class="card-icono">🍽️</span><h3>Menú</h3><p>{{ total_platos }}</p></div>
+        </a>
+        <a href="/clientes/" style="text-decoration:none;">
+            <div class="card"><span class="card-icono">👤</span><h3>Clientes</h3><p>{{ total_clientes }}</p></div>
+        </a>
+    </div>
+    <div class="barra-acciones" style="margin-top:28px;">
+        <span class="texto-muted">Acciones rápidas</span>
+        <a href="/ordenes/crear/" class="btn btn-dorado">＋ Nueva Orden</a>
+    </div>
 
-<div class="card">
-    <h3>Órdenes</h3>
-    <p>{{ total_ordenes }}</p>
-</div>
+{% elif user|tiene_rol:"cajero" %}
 
-<div class="card">
-    <h3>Facturas</h3>
-    <p>{{ total_facturas }}</p>
-</div>
+    <div class="seccion-header">
+        <h2>💳 Panel Cajero</h2>
+        <span class="seccion-linea"></span>
+    </div>
+    <div class="cards-grid">
+        <a href="/ordenes/" style="text-decoration:none;">
+            <div class="card"><span class="card-icono">⏳</span><h3>Órdenes Pendientes</h3><p>{{ ordenes_pendientes }}</p></div>
+        </a>
+        <a href="/facturas/" style="text-decoration:none;">
+            <div class="card"><span class="card-icono">🧾</span><h3>Facturas</h3><p>{{ total_facturas }}</p></div>
+        </a>
+    </div>
+    <div class="barra-acciones" style="margin-top:28px;">
+        <span class="texto-muted">Acciones rápidas</span>
+        <a href="/facturas/crear/" class="btn btn-dorado">＋ Nueva Factura</a>
+    </div>
+
+{% endif %}
+
 {% endblock %}
