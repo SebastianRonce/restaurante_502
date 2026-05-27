@@ -2,59 +2,55 @@
 
 {% block content %}
 
-<h2>Facturas</h2>
+<div class="seccion-header">
+    <h2>🧾 Facturas</h2>
+    <span class="seccion-linea"></span>
+</div>
 
-<a href="{% url 'crear_factura' %}">
-    <button>Nueva Factura</button>
-</a>
+<div class="barra-acciones">
+    <span class="texto-muted">Registro de pagos y facturación</span>
+    <a href="{% url 'crear_factura' %}" class="btn btn-dorado">
+        ＋ Nueva Factura
+    </a>
+</div>
 
-<br><br>
-
-<table border="1" cellpadding="10">
-
-    <tr>
-        <th>ID</th>
-        <th>Orden</th>
-        <th>Método Pago</th>
-        <th>Subtotal</th>
-        <th>Impuesto</th>
-        <th>Total</th>
-        <th>Acciones</th>
-    </tr>
-
-    {% for factura in facturas %}
-    <tr>
-
-        <td>{{ factura.id }}</td>
-
-        <td>{{ factura.orden }}</td>
-
-        <td>{{ factura.metodo_pago }}</td>
-
-        <td>${{ factura.subtotal }}</td>
-
-        <td>${{ factura.impuesto }}</td>
-
-        <td>${{ factura.total_factura }}</td>
-
-        <td>
-
-            <a href="{% url 'editar_factura' factura.id %}">
-                Editar
-            </a>
-
-            |
-
-            <a href="{% url 'eliminar_factura' factura.id %}"
-               onclick="return confirm('¿Seguro que deseas eliminar esta factura?')">
-                Eliminar
-            </a>
-
-        </td>
-
-    </tr>
-    {% endfor %}
-
-</table>
+<div class="tabla-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Orden</th>
+                <th>Método de Pago</th>
+                <th>Subtotal</th>
+                <th>Impuesto</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for factura in facturas %}
+            <tr>
+                <td class="texto-muted">{{ factura.id }}</td>
+                <td><strong>Orden #{{ factura.orden }}</strong></td>
+                <td>
+                    {% if factura.metodo_pago == 'efectivo' or factura.metodo_pago == 'Efectivo' %}
+                        <span class="badge badge-verde">💵 {{ factura.metodo_pago }}</span>
+                    {% elif factura.metodo_pago == 'tarjeta' or factura.metodo_pago == 'Tarjeta' %}
+                        <span class="badge badge-azul">💳 {{ factura.metodo_pago }}</span>
+                    {% else %}
+                        <span class="badge badge-gris">{{ factura.metodo_pago }}</span>
+                    {% endif %}
+                </td>
+                <td class="texto-muted">${{ factura.subtotal }}</td>
+                <td class="texto-muted">${{ factura.impuesto }}</td>
+                <td><span class="badge badge-dorado">${{ factura.total_factura }}</span></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align:center;padding:32px;" class="texto-muted">No hay facturas registradas aún.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 {% endblock %}

@@ -695,3 +695,29 @@ tbody td {
 
     font-size: 0.9rem;
 }
+/* ════════════════════════════════════════════════════════════════
+   ACCIONES EN TABLA
+════════════════════════════════════════════════════════════════ */
+.acciones-celda {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+tbody td .btn + .btn {
+    margin-left: 6px;
+}
+
+/* ID badge sutil */
+tbody td:first-child {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gris-suave);
+    letter-spacing: 0.04em;
+}
+
+/* Fila vacia */
+tbody td[colspan] {
+    font-style: italic;
+}

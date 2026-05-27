@@ -2,50 +2,57 @@
 
 {% block content %}
 
-<h2>Mesas</h2>
+<div class="seccion-header">
+    <h2>🪑 Mesas</h2>
+    <span class="seccion-linea"></span>
+</div>
 
-<a href="{% url 'crear_mesa' %}">
-    <button>Nueva Mesa</button>
-</a>
+<div class="barra-acciones">
+    <span class="texto-muted">Estado y disponibilidad de mesas</span>
+    <a href="{% url 'crear_mesa' %}" class="btn btn-dorado">
+        ＋ Nueva Mesa
+    </a>
+</div>
 
-<br><br>
-
-<table border="1" cellpadding="10">
-
-    <tr>
-        <th>ID</th>
-        <th>Número</th>
-        <th>Capacidad</th>
-        <th>Estado</th>
-        <th>Acciones</th>
-    </tr>
-
-    {% for mesa in mesas %}
-    <tr>
-
-        <td>{{ mesa.id }}</td>
-        <td>{{ mesa.numero_mesa }}</td>
-        <td>{{ mesa.capacidad }}</td>
-        <td>{{ mesa.estado_mesa }}</td>
-
-        <td>
-
-            <a href="{% url 'editar_mesa' mesa.id %}">
-                Editar
-            </a>
-
-            |
-
-            <a href="{% url 'eliminar_mesa' mesa.id %}"
-               onclick="return confirm('¿Seguro que deseas eliminar esta mesa?')">
-                Eliminar
-            </a>
-
-        </td>
-
-    </tr>
-    {% endfor %}
-
-</table>
+<div class="tabla-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Número</th>
+                <th>Capacidad</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mesa in mesas %}
+            <tr>
+                <td class="texto-muted">{{ mesa.id }}</td>
+                <td><strong>Mesa {{ mesa.numero_mesa }}</strong></td>
+                <td><span class="badge badge-azul">👥 {{ mesa.capacidad }} personas</span></td>
+                <td>
+                    {% if mesa.estado_mesa == 'disponible' or mesa.estado_mesa == 'Disponible' %}
+                        <span class="badge badge-verde">● {{ mesa.estado_mesa }}</span>
+                    {% elif mesa.estado_mesa == 'ocupada' or mesa.estado_mesa == 'Ocupada' %}
+                        <span class="badge badge-rojo">● {{ mesa.estado_mesa }}</span>
+                    {% else %}
+                        <span class="badge badge-naranja">● {{ mesa.estado_mesa }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'editar_mesa' mesa.id %}" class="btn btn-primario" style="padding:6px 14px;font-size:0.75rem;">✏️ Editar</a>
+                    <a href="{% url 'eliminar_mesa' mesa.id %}" class="btn btn-secundario" style="padding:6px 14px;font-size:0.75rem;color:#C62828;"
+                       onclick="return confirm('¿Seguro que deseas eliminar esta mesa?')">🗑️ Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align:center;padding:32px;" class="texto-muted">No hay mesas registradas aún.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 {% endblock %}

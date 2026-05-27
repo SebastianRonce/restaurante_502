@@ -442,52 +442,6 @@ def crear_factura(request):
                   {'form': form})
 
 
-@login_required
-def editar_factura(request, id):
-
-    factura = get_object_or_404(Factura, id=id)
-
-    if request.method == 'POST':
-
-        form = FacturaForm(request.POST,
-                           instance=factura)
-
-        if form.is_valid():
-
-            factura = form.save(commit=False)
-
-            subtotal = factura.orden.total
-
-            impuesto = subtotal * Decimal('0.19')
-
-            total_factura = subtotal + impuesto
-
-            factura.subtotal = subtotal
-            factura.impuesto = impuesto
-            factura.total_factura = total_factura
-
-            factura.save()
-
-            return redirect('facturas')
-
-    else:
-
-        form = FacturaForm(instance=factura)
-
-    return render(request,
-                  'gestion/form_factura.html',
-                  {'form': form})
-
-
-@login_required
-def eliminar_factura(request, id):
-
-    factura = get_object_or_404(Factura, id=id)
-
-    factura.delete()
-
-    return redirect('facturas')
-
 
 # =========================
 # AUTENTICACIÓN

@@ -2,50 +2,49 @@
 
 {% block content %}
 
-<h2>Platos</h2>
+<div class="seccion-header">
+    <h2>🍽️ Platos</h2>
+    <span class="seccion-linea"></span>
+</div>
 
-<a href="{% url 'crear_plato' %}">
-    <button>Nuevo Plato</button>
-</a>
+<div class="barra-acciones">
+    <span class="texto-muted">Gestión del menú del restaurante</span>
+    <a href="{% url 'crear_plato' %}" class="btn btn-dorado">
+        ＋ Nuevo Plato
+    </a>
+</div>
 
-<br><br>
-
-<table border="1" cellpadding="10">
-
-    <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Precio</th>
-        <th>Descripción</th>
-        <th>Acciones</th>
-    </tr>
-
-    {% for plato in platos %}
-    <tr>
-
-        <td>{{ plato.id }}</td>
-        <td>{{ plato.nombre_plato }}</td>
-        <td>{{ plato.precio }}</td>
-        <td>{{ plato.descripcion }}</td>
-
-        <td>
-
-            <a href="{% url 'editar_plato' plato.id %}">
-                Editar
-            </a>
-
-            |
-
-            <a href="{% url 'eliminar_plato' plato.id %}"
-               onclick="return confirm('¿Seguro que deseas eliminar este plato?')">
-                Eliminar
-            </a>
-
-        </td>
-
-    </tr>
-    {% endfor %}
-
-</table>
+<div class="tabla-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for plato in platos %}
+            <tr>
+                <td class="texto-muted">{{ plato.id }}</td>
+                <td><strong>{{ plato.nombre_plato }}</strong></td>
+                <td><span class="badge badge-dorado">${{ plato.precio }}</span></td>
+                <td class="texto-muted">{{ plato.descripcion }}</td>
+                <td>
+                    <a href="{% url 'editar_plato' plato.id %}" class="btn btn-primario" style="padding:6px 14px;font-size:0.75rem;">✏️ Editar</a>
+                    <a href="{% url 'eliminar_plato' plato.id %}" class="btn btn-secundario" style="padding:6px 14px;font-size:0.75rem;color:#C62828;"
+                       onclick="return confirm('¿Seguro que deseas eliminar este plato?')">🗑️ Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align:center;padding:32px;" class="texto-muted">No hay platos registrados aún.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 {% endblock %}

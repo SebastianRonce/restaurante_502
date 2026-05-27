@@ -2,50 +2,49 @@
 
 {% block content %}
 
-<h2>Empleados</h2>
+<div class="seccion-header">
+    <h2>👥 Empleados</h2>
+    <span class="seccion-linea"></span>
+</div>
 
-<a href="{% url 'crear_empleado' %}">
-    <button>Nuevo Empleado</button>
-</a>
+<div class="barra-acciones">
+    <span class="texto-muted">Personal activo del restaurante</span>
+    <a href="{% url 'crear_empleado' %}" class="btn btn-dorado">
+        ＋ Nuevo Empleado
+    </a>
+</div>
 
-<br><br>
-
-<table border="1" cellpadding="10">
-
-    <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Teléfono</th>
-        <th>Correo</th>
-        <th>Acciones</th>
-    </tr>
-
-    {% for empleado in empleados %}
-    <tr>
-
-        <td>{{ empleado.id }}</td>
-        <td>{{ empleado.nombre }}</td>
-        <td>{{ empleado.telefono }}</td>
-        <td>{{ empleado.correo }}</td>
-
-        <td>
-
-            <a href="{% url 'editar_empleado' empleado.id %}">
-                Editar
-            </a>
-
-            |
-
-            <a href="{% url 'eliminar_empleado' empleado.id %}"
-               onclick="return confirm('¿Seguro que deseas eliminar este empleado?')">
-                Eliminar
-            </a>
-
-        </td>
-
-    </tr>
-    {% endfor %}
-
-</table>
+<div class="tabla-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Correo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for empleado in empleados %}
+            <tr>
+                <td class="texto-muted">{{ empleado.id }}</td>
+                <td><strong>{{ empleado.nombre }}</strong></td>
+                <td>{{ empleado.telefono }}</td>
+                <td class="texto-muted">{{ empleado.correo }}</td>
+                <td>
+                    <a href="{% url 'editar_empleado' empleado.id %}" class="btn btn-primario" style="padding:6px 14px;font-size:0.75rem;">✏️ Editar</a>
+                    <a href="{% url 'eliminar_empleado' empleado.id %}" class="btn btn-secundario" style="padding:6px 14px;font-size:0.75rem;color:#C62828;"
+                       onclick="return confirm('¿Seguro que deseas eliminar este empleado?')">🗑️ Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align:center;padding:32px;" class="texto-muted">No hay empleados registrados aún.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 {% endblock %}

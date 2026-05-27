@@ -1,4 +1,5 @@
 from django import forms
+from django.core import validators
 
 from .models import (
     Cliente,
@@ -9,8 +10,15 @@ from .models import (
     Factura
 )
 
+solo_numeros = validators.RegexValidator(
+    regex=r'^\d+$',
+    message='El teléfono solo debe contener números.'
+)
+
 
 class ClienteForm(forms.ModelForm):
+
+    telefono = forms.CharField(validators=[solo_numeros])
 
     class Meta:
         model = Cliente
@@ -18,6 +26,8 @@ class ClienteForm(forms.ModelForm):
 
 
 class EmpleadoForm(forms.ModelForm):
+
+    telefono = forms.CharField(validators=[solo_numeros])
 
     class Meta:
         model = Empleado

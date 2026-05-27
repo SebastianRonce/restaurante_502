@@ -2,44 +2,42 @@
 
 {% block content %}
 
+<div class="seccion-header">
+    <h2>🧾 Nueva Factura</h2>
+    <span class="seccion-linea"></span>
+</div>
+
 <div class="form-card">
 
-    <h2>Formulario Factura</h2>
+    <p class="texto-muted" style="margin-bottom:22px;font-size:0.88rem;">
+        El subtotal, impuesto (19%) y total se calculan automáticamente al guardar.
+    </p>
 
     <form method="POST">
-
         {% csrf_token %}
 
         <div class="form-grupo">
-            <label>Orden</label>
+            <label for="{{ form.orden.id_for_label }}">Orden</label>
             {{ form.orden }}
+            {% if form.orden.errors %}
+                <span style="color:#C62828;font-size:0.78rem;margin-top:4px;display:block;">{{ form.orden.errors|join:", " }}</span>
+            {% endif %}
         </div>
 
         <div class="form-grupo">
-            <label>Método de pago</label>
+            <label for="{{ form.metodo_pago.id_for_label }}">Método de Pago</label>
             {{ form.metodo_pago }}
+            {% if form.metodo_pago.errors %}
+                <span style="color:#C62828;font-size:0.78rem;margin-top:4px;display:block;">{{ form.metodo_pago.errors|join:", " }}</span>
+            {% endif %}
         </div>
 
-        <hr><br>
-
-        <p>
-            El subtotal, impuesto y total se calculan automáticamente
-            al guardar la factura.
-        </p>
-
-        <br>
-
-        <button type="submit" class="btn btn-primario">
-            Guardar
-        </button>
+        <div style="display:flex;gap:12px;margin-top:8px;">
+            <button type="submit" class="btn btn-dorado">💾 Guardar Factura</button>
+            <a href="{% url 'facturas' %}" class="btn btn-secundario">← Volver</a>
+        </div>
 
     </form>
-
-    <br>
-
-    <a href="{% url 'facturas' %}" class="btn btn-secundario">
-        Volver
-    </a>
 
 </div>
 

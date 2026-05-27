@@ -2,24 +2,33 @@
 
 {% block content %}
 
-<h2>Formulario Plato</h2>
+<div class="seccion-header">
+    <h2>🍽️ {% if form.instance.pk %}Editar Plato{% else %}Nuevo Plato{% endif %}</h2>
+    <span class="seccion-linea"></span>
+</div>
 
-<form method="POST">
+<div class="form-card">
 
-    {% csrf_token %}
+    <form method="POST">
+        {% csrf_token %}
 
-    {{ form.as_p }}
+        {% for field in form %}
+        <div class="form-grupo">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+                <span style="color:#C62828;font-size:0.78rem;margin-top:4px;display:block;">{{ field.errors|join:", " }}</span>
+            {% endif %}
+        </div>
+        {% endfor %}
 
-    <button type="submit">
-        Guardar
-    </button>
+        <div style="display:flex;gap:12px;margin-top:8px;">
+            <button type="submit" class="btn btn-dorado">💾 Guardar</button>
+            <a href="{% url 'platos' %}" class="btn btn-secundario">← Volver</a>
+        </div>
 
-</form>
+    </form>
 
-<br>
-
-<a href="{% url 'platos' %}">
-    Volver
-</a>
+</div>
 
 {% endblock %}

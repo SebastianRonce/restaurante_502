@@ -2,59 +2,63 @@
 
 {% block content %}
 
-<h2>Órdenes</h2>
+<div class="seccion-header">
+    <h2>📋 Órdenes</h2>
+    <span class="seccion-linea"></span>
+</div>
 
-<a href="{% url 'crear_orden' %}">
-    <button>Nueva Orden</button>
-</a>
+<div class="barra-acciones">
+    <span class="texto-muted">Historial y gestión de órdenes</span>
+    <a href="{% url 'crear_orden' %}" class="btn btn-dorado">
+        ＋ Nueva Orden
+    </a>
+</div>
 
-<br><br>
-
-<table border="1" cellpadding="10">
-
-    <tr>
-        <th>ID</th>
-        <th>Cliente</th>
-        <th>Empleado</th>
-        <th>Mesa</th>
-        <th>Estado</th>
-        <th>Total</th>
-        <th>Acciones</th>
-    </tr>
-
-    {% for orden in ordenes %}
-    <tr>
-
-        <td>{{ orden.id }}</td>
-
-        <td>{{ orden.cliente }}</td>
-
-        <td>{{ orden.empleado }}</td>
-
-        <td>{{ orden.mesa }}</td>
-
-        <td>{{ orden.estado_orden }}</td>
-
-        <td>${{ orden.total }}</td>
-
-        <td>
-
-            <a href="{% url 'editar_orden' orden.id %}">
-                Editar
-            </a>
-
-            |
-
-            <a href="{% url 'eliminar_orden' orden.id %}"
-               onclick="return confirm('¿Seguro que deseas eliminar esta orden?')">
-                Eliminar
-            </a>
-
-        </td>
-
-    </tr>
-    {% endfor %}
-
-</table>
+<div class="tabla-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Cliente</th>
+                <th>Empleado</th>
+                <th>Mesa</th>
+                <th>Estado</th>
+                <th>Total</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for orden in ordenes %}
+            <tr>
+                <td class="texto-muted">{{ orden.id }}</td>
+                <td><strong>{{ orden.cliente }}</strong></td>
+                <td class="texto-muted">{{ orden.empleado }}</td>
+                <td>Mesa {{ orden.mesa }}</td>
+                <td>
+                    {% if orden.estado_orden == 'pendiente' or orden.estado_orden == 'Pendiente' %}
+                        <span class="badge badge-naranja">⏳ {{ orden.estado_orden }}</span>
+                    {% elif orden.estado_orden == 'entregada' or orden.estado_orden == 'Entregada' %}
+                        <span class="badge badge-verde">✓ {{ orden.estado_orden }}</span>
+                    {% elif orden.estado_orden == 'cancelada' or orden.estado_orden == 'Cancelada' %}
+                        <span class="badge badge-rojo">✗ {{ orden.estado_orden }}</span>
+                    {% else %}
+                        <span class="badge badge-gris">{{ orden.estado_orden }}</span>
+                    {% endif %}
+                </td>
+                <td><span class="badge badge-dorado">${{ orden.total }}</span></td>
+                <td>
+                    <a href="{% url 'editar_orden' orden.id %}" class="btn btn-primario" style="padding:6px 14px;font-size:0.75rem;">✏️ Editar</a>
+                    <a href="{% url 'eliminar_orden' orden.id %}" class="btn btn-secundario" style="padding:6px 14px;font-size:0.75rem;color:#C62828;"
+                       onclick="return confirm('¿Seguro que deseas eliminar esta orden?')">🗑️ Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" style="text-align:center;padding:32px;" class="texto-muted">No hay órdenes registradas aún.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 {% endblock %}
